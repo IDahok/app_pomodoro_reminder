@@ -22,6 +22,12 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _loadPomodoroMinutes();
     _checkNotificationPermissions();
+    _initializeReminders();
+  }
+
+  void _initializeReminders() {
+    // Os lembretes agora são inicializados automaticamente no ViewModel
+    print('App inicializado - lembretes prontos para funcionar');
   }
 
   Future<void> _loadPomodoroMinutes() async {
