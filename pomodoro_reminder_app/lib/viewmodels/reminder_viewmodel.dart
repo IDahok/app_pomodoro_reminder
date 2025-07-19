@@ -29,13 +29,12 @@ class ReminderViewModel extends ChangeNotifier {
   Timer? _checkTimer;
   final Map<String, DateTime> _lastTriggered = {};
 
-  List<Reminder> get reminders => List.unmodifiable(_reminders);
-
-  @override
-  void initState() {
+  ReminderViewModel() {
     _loadLastTriggeredTimes();
     _startPeriodicCheck();
   }
+
+  List<Reminder> get reminders => List.unmodifiable(_reminders);
 
   Future<void> _loadLastTriggeredTimes() async {
     final prefs = await SharedPreferences.getInstance();
@@ -88,8 +87,8 @@ class ReminderViewModel extends ChangeNotifier {
   }
 
   void _startPeriodicCheck() {
-    // Verifica a cada 30 segundos
-    _checkTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    // Verifica a cada 1 segundo para maior precisão
+    _checkTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _checkAllReminders();
     });
   }

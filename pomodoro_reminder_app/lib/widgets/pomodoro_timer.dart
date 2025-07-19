@@ -21,6 +21,8 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   late Duration _duration;
   late Duration _initialDuration;
   late Ticker _ticker;
+  DateTime? _startTime;
+  Duration _elapsedBeforePause = Duration.zero;
 
   @override
   void initState() {
@@ -41,6 +43,8 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
         _duration = Duration(seconds: _secondsLeft);
         _initialDuration = Duration(seconds: _totalSeconds);
         _isRunning = false;
+        _elapsedBeforePause = Duration.zero;
+        _startTime = null;
       });
     }
   }
@@ -48,6 +52,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   void _startTimer() {
     setState(() {
       _isRunning = true;
+      _startTime = DateTime.now();
     });
     _ticker = Ticker(_onTick)..start();
   }
@@ -55,8 +60,12 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   void _pauseTimer() {
     setState(() {
       _isRunning = false;
+      if (_startTime != null) {
+        _elapsedBeforePause += DateTime.now().difference(_startTime!);
+      }
     });
     _ticker.dispose();
+    _startTime = null;
   }
 
   void _resetTimer() {
@@ -64,14 +73,19 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
       _isRunning = false;
       _secondsLeft = _totalSeconds;
       _duration = Duration(seconds: _secondsLeft);
+      _elapsedBeforePause = Duration.zero;
+      _startTime = null;
     });
     _ticker.dispose();
   }
 
   void _onTick(Duration elapsed) {
-    if (!_isRunning) return;
+    if (!_isRunning || _startTime == null) return;
+    final now = DateTime.now();
+    final totalElapsed = _elapsedBeforePause + now.difference(_startTime!);
+    final secondsLeft = _totalSeconds - totalElapsed.inSeconds;
     setState(() {
-      _secondsLeft = _totalSeconds - elapsed.inSeconds;
+      _secondsLeft = secondsLeft > 0 ? secondsLeft : 0;
       _duration = Duration(seconds: _secondsLeft);
       if (_secondsLeft <= 0) {
         _isRunning = false;
@@ -131,6 +145,7 @@ class Ticker {
   late final Stopwatch _stopwatch;
   late final Duration _interval;
   bool _active = false;
+  Duration get elapsed => _stopwatch.elapsed;
 
   Ticker(this.onTick, {Duration interval = const Duration(seconds: 1)}) {
     _interval = interval;

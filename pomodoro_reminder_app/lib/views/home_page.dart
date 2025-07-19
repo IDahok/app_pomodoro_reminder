@@ -161,6 +161,18 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: const Text('Verificar Permissões'),
                     ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await NotificationService.showNotification(
+                          id: 999,
+                          title: 'Teste de Notificação',
+                          body: 'Esta é uma notificação de teste com som!',
+                          channelId: 'beber_agua', // usa canal com som
+                        );
+                      },
+                      child: const Text('Testar Notificação'),
+                    ),
                   ],
                 );
               },

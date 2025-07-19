@@ -70,6 +70,7 @@ class NotificationService {
         importance: Importance.max,
         priority: Priority.high,
         showWhen: false,
+        playSound: true, // Garantir que o som será tocado
         // O som já está definido no canal
       );
       final platformChannelSpecifics = NotificationDetails(android: androidDetails);
